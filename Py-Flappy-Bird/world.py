@@ -36,3 +36,61 @@ class World:
         self._add_pipe()
         bird = Bird((WIDTH//2 - pipe_size, HEIGHT//2 - pipe_size), 30)
         self.player.add(bird)
+    
+    # world.py
+    # for moving background/obstacle
+    def _scroll_x(self):
+        if self.playing:
+            self.world_shift = -6
+        else:
+            self.world_shift = 0
+
+    # add gravity to bird for falling
+    def _apply_gravity(self, player):
+        if self.playing or self.game_over:
+            player.direction.y += self.gravity
+            player.rect.y += player.direction.y
+
+    # handles scoring and collision
+    def _handle_collisions(self):
+        bird = self.player.sprite
+        # for collision checking
+        if pygame.sprite.groupcollide(self.player, self.pipes, False, False) or bird.rect.bottom >= HEIGHT or bird.rect.top <= 0:
+            self.playing = False
+            self.game_over = True
+        else:
+            # if player pass through the pipe gaps
+            bird = self.player.sprite
+            if bird.rect.x >= self.current_pipe.rect.centerx:
+                bird.score += 1
+                self.passed = True    
+    # world.py
+    # updates the bird's overall state
+    def update(self, player_event = None):
+        # new pipe adder
+        if self.current_pipe.rect.centerx  <= (WIDTH // 2) - pipe_size:
+            self._add_pipe()
+        # updates, draws pipes
+        self.pipes.update(self.world_shift)
+        self.pipes.draw(self.screen)
+        # applying game physics
+        self._apply_gravity(self.player.sprite)
+        self._scroll_x()
+        self._handle_collisions()
+        # configuring player actions
+        if player_event == "jump" and not self.game_over:
+            player_event = True
+        elif player_event == "restart":
+            self.game_over = False
+            self.pipes.empty()
+            self.player.empty()
+            self.player.score = 0
+            self._generate_world()
+        else:
+            player_event = False
+        if not self.playing:
+            self.game.instructions()
+        # updates, draws pipes
+        self.player.update(player_event)
+        self.player.draw(self.screen)
+        self.game.show_score(self.player.sprite.score)            
