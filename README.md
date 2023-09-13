@@ -59,5 +59,3 @@ python main.py
 Contributions are welcome! If you'd like to improve this project or add new features, please fork the repository and create a pull request. You can also open issues for bug reports or feature requests.
 
 
-
-Replace "yourusername" in the clone command with your GitHub username if you plan to host the project on GitHub. Customize the README file further to include any additional information about your project or game.
